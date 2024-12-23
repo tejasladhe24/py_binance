@@ -4,15 +4,31 @@ set -e
 
 # Variables
 PACKAGE_NAME="py_binance"
-PACKAGE_URL="http://127.0.0.1:5500/py_binance.zip" # Replace with the actual URL
+DEFAULT_TAG="0.0.1" # Default tag version
 DOWNLOAD_DIR="/tmp/${PACKAGE_NAME}_download"
 PACKAGE_ZIP_PATH="${DOWNLOAD_DIR}/${PACKAGE_NAME}.zip"
 PYTHON_SITE_PACKAGES=$(python3 -c "import site; print(site.getsitepackages()[0])")
 DESTINATION="${PYTHON_SITE_PACKAGES}/${PACKAGE_NAME}"
 
 # Functions
+function get_tag_version() {
+    echo "The default version to be installed is ${DEFAULT_TAG}."
+    read -p "Do you want to install this version? (y/n): " confirm
+    if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+        read -p "Enter the desired version tag (e.g., 0.0.2): " TAG
+        if [[ -z "$TAG" ]]; then
+            echo "No version entered. Aborting installation."
+            exit 1
+        fi
+    else
+        TAG=${DEFAULT_TAG}
+    fi
+    PACKAGE_URL="https://github.com/tejasladhe24/py_binance/releases/download/${TAG}/py_binance.zip"
+    echo "Selected version: ${TAG}"
+}
+
 function download_package() {
-    echo "Downloading ${PACKAGE_NAME}..."
+    echo "Downloading ${PACKAGE_NAME} version ${TAG}..."
     mkdir -p "${DOWNLOAD_DIR}"
     curl -o "${PACKAGE_ZIP_PATH}" -L "${PACKAGE_URL}"
     echo "Downloaded ${PACKAGE_NAME} to ${PACKAGE_ZIP_PATH}"
@@ -43,13 +59,15 @@ function clean_up() {
 # Confirmation Prompt
 function confirm_installation() {
     echo "The package will be installed in the following directory:"
+    echo ""
     echo "${DESTINATION}"
+    echo ""
+    echo "Note: Enable a virtual environment and rerun this script for isolated installation. Ignore if already in a virtual environment."
     echo ""
     read -p "Do you want to proceed with this installation? (y/n): " confirm
     if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
         echo "Installation aborted."
-        echo "Suggestion: Enable a virtual environment and rerun this script for isolated installation."
-        echo "To enable a virtual environment, use the following commands:"
+        echo "To install in a virtual environment, use the following commands to enable venv:"
         echo ""
         echo "    python3 -m venv myenv"
         echo "    source myenv/bin/activate"
@@ -60,10 +78,11 @@ function confirm_installation() {
 }
 
 # Main Execution
+get_tag_version
 confirm_installation
 download_package
 extract_package
 install_package
 clean_up
 
-echo "Installation of ${PACKAGE_NAME} complete!"
+echo "Installation of ${PACKAGE_NAME} version ${TAG} complete!"

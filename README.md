@@ -7,14 +7,7 @@ PyBinance provides a Python client for interacting with the Binance API. It incl
 Clone the repository and install the required dependencies:
 
 ```bash
-# Clone the repository
-git clone https://github.com/tejasladhe24/py-binance.git
-
-# Navigate to the directory
-cd py_binance
-
-# Install dependencies
-pip install -r requirements.txt
+curl https://raw.githubusercontent.com/tejasladhe24/py_binance/refs/heads/main/install.bash | bash
 ```
 
 ## Development

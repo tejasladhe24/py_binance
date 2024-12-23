@@ -13,9 +13,11 @@ DESTINATION="${PYTHON_SITE_PACKAGES}/${PACKAGE_NAME}"
 # Functions
 function get_tag_version() {
     echo "The default version to be installed is ${DEFAULT_TAG}."
-    read -p "Do you want to install this version? (y/n): " confirm
+    echo -n "Do you want to install this version? (y/n): "
+    read confirm
     if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
-        read -p "Enter the desired version tag (e.g., 0.0.2): " TAG
+        echo -n "Enter the desired version tag (e.g., 0.0.2): "
+        read TAG
         if [[ -z "$TAG" ]]; then
             echo "No version entered. Aborting installation."
             exit 1
@@ -59,15 +61,14 @@ function clean_up() {
 # Confirmation Prompt
 function confirm_installation() {
     echo "The package will be installed in the following directory:"
-    echo ""
     echo "${DESTINATION}"
     echo ""
-    echo "Note: Enable a virtual environment and rerun this script for isolated installation. Ignore if already in a virtual environment."
-    echo ""
-    read -p "Do you want to proceed with this installation? (y/n): " confirm
+    echo -n "Do you want to proceed with this installation? (y/n): "
+    read confirm
     if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
         echo "Installation aborted."
-        echo "To install in a virtual environment, use the following commands to enable venv:"
+        echo "Suggestion: Enable a virtual environment and rerun this script for isolated installation."
+        echo "To enable a virtual environment, use the following commands:"
         echo ""
         echo "    python3 -m venv myenv"
         echo "    source myenv/bin/activate"

@@ -10,14 +10,14 @@ PACKAGE_ZIP_PATH="${DOWNLOAD_DIR}/${PACKAGE_NAME}.zip"
 PYTHON_SITE_PACKAGES=$(python3 -c "import site; print(site.getsitepackages()[0])")
 DESTINATION="${PYTHON_SITE_PACKAGES}/${PACKAGE_NAME}"
 
-# Functions
+# Prompt user for the tag version
 function get_tag_version() {
     echo "The default version to be installed is ${DEFAULT_TAG}."
     echo -n "Do you want to install this version? (y/n): "
-    read confirm
+    read confirm < /dev/tty
     if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
         echo -n "Enter the desired version tag (e.g., 0.0.2): "
-        read TAG
+        read TAG < /dev/tty
         if [[ -z "$TAG" ]]; then
             echo "No version entered. Aborting installation."
             exit 1
@@ -29,6 +29,7 @@ function get_tag_version() {
     echo "Selected version: ${TAG}"
 }
 
+# Download the package
 function download_package() {
     echo "Downloading ${PACKAGE_NAME} version ${TAG}..."
     mkdir -p "${DOWNLOAD_DIR}"
@@ -36,12 +37,14 @@ function download_package() {
     echo "Downloaded ${PACKAGE_NAME} to ${PACKAGE_ZIP_PATH}"
 }
 
+# Extract the package
 function extract_package() {
     echo "Extracting ${PACKAGE_NAME}..."
     unzip -q "${PACKAGE_ZIP_PATH}" -d "${DOWNLOAD_DIR}"
     echo "Extracted to ${DOWNLOAD_DIR}/${PACKAGE_NAME}"
 }
 
+# Install the package
 function install_package() {
     echo "Installing ${PACKAGE_NAME} to site-packages..."
     if [ -d "${DESTINATION}" ]; then
@@ -52,19 +55,20 @@ function install_package() {
     echo "Installed ${PACKAGE_NAME} to ${DESTINATION}"
 }
 
+# Clean up temporary files
 function clean_up() {
     echo "Cleaning up temporary files..."
     rm -rf "${DOWNLOAD_DIR}"
     echo "Clean up complete."
 }
 
-# Confirmation Prompt
+# Confirm installation location
 function confirm_installation() {
     echo "The package will be installed in the following directory:"
     echo "${DESTINATION}"
     echo ""
     echo -n "Do you want to proceed with this installation? (y/n): "
-    read confirm
+    read confirm < /dev/tty
     if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
         echo "Installation aborted."
         echo "Suggestion: Enable a virtual environment and rerun this script for isolated installation."
@@ -77,6 +81,20 @@ function confirm_installation() {
         exit 1
     fi
 }
+
+#!/bin/bash
+
+echo ""
+echo "██████╗ ██╗   ██╗██████╗ ██╗███╗   ██╗ █████╗ ███╗   ██╗ ██████╗███████╗"
+echo "██╔══██╗ ██║ ██║ ██╔══██╗██║████╗  ██║██╔══██╗████╗  ██║██╔════╝██╔════╝"
+echo "██████╔╝   ██║  ║██████╔╝██║██╔██╗ ██║███████║██╔██╗ ██║██║     █████╗  "
+echo "██╔═══╝    ██║  ║██╔══██╗██║██║╚██╗██║██╔══██║██║╚██╗██║██║     ██╔══╝  "
+echo "██║        ██║  ║██████╔╝██║██║ ╚████║██║  ██║██║ ╚████║╚██████╗███████╗"
+echo "╚═╝        ╚═╝  ╚══════╝ ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝╚══════╝"
+echo ""
+echo "                           PYBINANCE"
+echo ""
+
 
 # Main Execution
 get_tag_version
